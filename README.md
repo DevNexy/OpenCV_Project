@@ -32,6 +32,75 @@
 
 ---
 ## <핵심 코드 설명>
+
+먼저 Key를 이용하여 필터를 바꾸는 이벤트 처리 코드이다.
+이미지에 대하여 6가지의 필터가 적용되도록 구현하였다.
+```py
+while True:
+    key = cv2.waitKey()
+
+    if key == ord("i"): # i
+        image = cv2.imread("C:/Users/we726/PycharmProjects/pythonProject/source/images/Myphoto.jpg", cv2.IMREAD_COLOR) #원본 불러오기
+
+    elif key == 49: #1
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) #GRAY 필터
+        # cv2.imshow('filter program', image)
+
+    elif key == 50: #2
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB) #RGB 필터
+
+    elif key == 51: #3
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV) #HSV 필터
+        
+    elif key == 52: #4
+        image = cv2.Canny(image, 50, 100) #Canny 엣지
+
+    elif key == 53: #5
+        image = cv2.GaussianBlur(image, (0,0), 2) #GaussianBlur
+
+    elif key == 54: #6
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) #GRAY 필터
+        ret, out = cv2.threshold(gray, 128, 255, cv2.THRESH_BINARY) #임계값 처리
+        image = cv2.bitwise_not(out) #비트 연산 not
+```
+이미지의 밝기를 조절해 주는 코드이다. Canny 엣지 필터에만 적용이 된다.
+```py
+    elif key == ord("+"): #+버튼
+        image += cv2.add(image, 100)  # 영상 밝게
+
+    elif key == ord("-"): #-버튼
+        image += cv2.subtract(image, 100) #영상 어둡게
+```
+'m'키를 누르면 노트북 웹캠을 카메라로 사용하여 실시간 얼굴영역 모자이크처리를 하는 코드이다.   
+먼저 얼굴을 인식할 수 있는 haarcascade_frontalface_default.xml를 다운받아 불러온 뒤,   
+웹캠이 켜지면 카메라를 통해 프레임을 읽어온다.   
+그 후, 탐지된 얼굴 이미지의 크기를 가져와서 모자이크 영역을 계산하면 얼굴에 모자이크가 나타나게 된다.   
+```py
+    elif key == ord("m"): #m
+        cap = cv2.VideoCapture(0)  #노트북 웹캠을 카메라로 사용
+        cap.set(3, 640)  # 너비
+        cap.set(4, 480)  # 높이i
+
+        while (True):
+            ret, frame = cap.read()
+            frame = cv2.flip(frame, 1)  #좌우대칭
+            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+            faces = face_cascade.detectMultiScale(gray, 1.05, 5)
+            if len(faces):
+                for (x, y, w, h) in faces:
+                    face_img = frame[y:y + h, x:x + w]  #탐지된 얼굴 이미지 crop
+                    face_img = cv2.resize(face_img, dsize=(0, 0), fx=0.04, fy=0.04)  #축소
+                    face_img = cv2.resize(face_img, (w, h), interpolation=cv2.INTER_AREA)  #확대
+                    frame[y:y + h, x:x + w] = face_img  #탐지된 얼굴 영역 모자이크 처리
+
+            cv2.imshow('mosaic_cam', frame) #cam 불러오기i
+
+            k = cv2.waitKey(30) & 0xff
+            if k == 27:  # Esc 키를 누르면 종료
+                cv2.destroyWindow('mosaic_cam') #cam 이름의 윈도우 창 닫기
+                break
+```
 ---
 ## <스크린 샷>
 
