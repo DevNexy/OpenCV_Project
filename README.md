@@ -79,7 +79,7 @@ while True:
     elif key == ord("m"): #m
         cap = cv2.VideoCapture(0)  #노트북 웹캠을 카메라로 사용
         cap.set(3, 640)  # 너비
-        cap.set(4, 480)  # 높이i
+        cap.set(4, 480)  # 높이
 
         while (True):
             ret, frame = cap.read()
@@ -94,7 +94,7 @@ while True:
                     face_img = cv2.resize(face_img, (w, h), interpolation=cv2.INTER_AREA)  #확대
                     frame[y:y + h, x:x + w] = face_img  #탐지된 얼굴 영역 모자이크 처리
 
-            cv2.imshow('mosaic_cam', frame) #cam 불러오기i
+            cv2.imshow('mosaic_cam', frame) #cam 불러오기
 
             k = cv2.waitKey(30) & 0xff
             if k == 27:  # Esc 키를 누르면 종료
